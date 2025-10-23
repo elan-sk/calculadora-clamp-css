@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de clamp()</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="card">
+    <h2>🧮 Generador clamp()</h2>
+    <div class="input-container">
+      <input id="min" type="number" placeholder="Tamaño mínimo (px)" />
+      <input id="max" type="number" placeholder="Tamaño máximo (px)" />
+    </div>
+    <button onclick="generate()">🚀 Generar código</button>
+    <pre id="result">Aquí aparecerá el código...</pre>
+    <button id="copyBtn" style="display:none;" onclick="copyCode()">📋 Copiar
+      código</button>
+    <span id="copied" class="copied">¡Copiado!</span>
+    <a href="index.html" class="home-btn">🏠 Volver al inicio</a>
+  </div>
+
+  <script>
+    function generate() {
+      const min = parseFloat(document.getElementById('min').value);
+      const max = parseFloat(document.getElementById('max').value);
+      if (!min || !max || max <= min)
+        return alert('Por favor ingresa valores válidos (máx > mín)');
+
+      // 🧩 Valores configurables
+      const containerMin = 576;
+      const containerMax = 1400;
+      const range = containerMax - containerMin;
+
+      // 🧮 Cálculos
+      const vw = (((max - min) / range) * 100).toFixed(2);
+      const offsetPx = (min - ((max - min) * (containerMin / range))).toFixed(2);
+
+      const toRem = n => parseFloat((n / 16).toFixed(3));
+      const code = `clamp(${toRem(min)}rem, ${toRem(offsetPx)}rem + ${vw}vw, ${toRem(max)}rem);`;
+
+      document.getElementById('result').textContent = code;
+      document.getElementById('copyBtn').style.display = 'inline-block';
+    }
+
+    function copyCode() {
+      const text = document.getElementById('result').textContent;
+      navigator.clipboard.writeText(text);
+      const copied = document.getElementById('copied');
+      copied.classList.add('show');
+      setTimeout(() => copied.classList.remove('show'), 1500);
+    }
+  </script>
+
+</body>
+
+</html>

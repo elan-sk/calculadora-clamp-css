@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador clamp() proporcional</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="card">
+    <h2>🧮 Generador proporcional clamp()</h2>
+    <input id="desktop" type="number"
+      placeholder="Tamaño de fuente en desktop (px)" />
+    <div>
+      <button onclick="generate()">🚀 Generar código</button>
+      <button class="secondary" onclick="changeProportion()">⚙️ Cambiar
+        proporción</button>
+    </div>
+    <pre id="result">Aquí aparecerá el código...</pre>
+    <button id="copyBtn" style="display:none;" onclick="copyCode()">📋 Copiar
+      código</button>
+    <span id="copied" class="copied">¡Copiado!</span>
+    <a href="index.html" class="home-btn">🏠 Volver al inicio</a>
+  </div>
+
+  <script>
+    let proportion = 0.85; // valor por defecto (85%)
+
+    function clean(num) {
+      return parseFloat(num.toFixed(3)).toString();
+    }
+
+    function generate() {
+      const fontDesktop = parseFloat(document.getElementById('desktop').value);
+      if (!fontDesktop || fontDesktop <= 0)
+        return alert('Por favor ingresa un tamaño válido');
+
+      // 📏 Configuración base
+      const containerMin = 350;
+      const containerMax = 1400;
+      const range = containerMax - containerMin;
+
+      // 🧮 Cálculos con la proporción actual
+      const fontMin = fontDesktop * proportion;
+      const vw = clean(((fontDesktop - fontMin) / range) * 100);
+      const offsetPx = clean(fontMin - ((fontDesktop - fontMin) * (containerMin / range)));
+
+      const toRem = n => clean(n / 16);
+      const code = `clamp(${toRem(fontMin)}rem, ${toRem(offsetPx)}rem + ${vw}vw, ${toRem(fontDesktop)}rem);`;
+
+      document.getElementById('result').textContent = code;
+      document.getElementById('copyBtn').style.display = 'inline-block';
+    }
+
+    function changeProportion() {
+      const newVal = prompt("Introduce el nuevo porcentaje de reducción (por ejemplo, 80 para 80%):", proportion * 100);
+      const parsed = parseFloat(newVal);
+      if (!isNaN(parsed) && parsed > 0 && parsed < 100) {
+        proportion = parsed / 100;
+        alert(`✅ Proporción actualizada a ${parsed}%`);
+      } else {
+        alert("⚠️ Valor no válido. Debe estar entre 1 y 99.");
+      }
+    }
+
+    function copyCode() {
+      const text = document.getElementById('result').textContent;
+      navigator.clipboard.writeText(text);
+      const copied = document.getElementById('copied');
+      copied.classList.add('show');
+      setTimeout(() => copied.classList.remove('show'), 1500);
+    }
+  </script>
+</body>
+
+</html>
